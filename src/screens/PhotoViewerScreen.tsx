@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useMemo } from 'react';
+import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import {
   StyleSheet,
   View,
@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
   Modal,
   ScrollView,
+  Image,
 } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import Ionicons from '@react-native-vector-icons/ionicons';
@@ -20,7 +21,7 @@ import { RootStackParamList, Photo, serializableToPhoto } from '../types';
 import { downloadPhoto } from '../services/downloadService';
 import { ratePhoto, getEnrichedPhotoMetadata, EnrichedPhotoMetadata } from '../services/plexService';
 import { useAuth } from '../context/AuthContext';
-import { ZoomableImage } from '../components/ZoomableImage';
+import { ZoomableImage } from '../components';
 
 type PhotoViewerRouteProp = RouteProp<RootStackParamList, 'PhotoViewer'>;
 
@@ -55,6 +56,11 @@ export const PhotoViewerScreen: React.FC = () => {
     });
     return initial;
   });
+
+  // Ref for FlatList to control scrolling
+  const flatListRef = useRef<FlatList<Photo>>(null);
+  // Ref for carousel FlatList to control scrolling
+  const carouselFlatListRef = useRef<FlatList<Photo>>(null);
 
   const currentPhoto = photos[currentIndex];
   const isFavorite = favorites[currentPhoto.id] || false;
@@ -95,6 +101,22 @@ export const PhotoViewerScreen: React.FC = () => {
       fetchEnrichedMetadata();
     }
   }, [showInfoModal, fetchEnrichedMetadata]);
+
+  // Auto-scroll carousel to current photo when index changes
+  useEffect(() => {
+    if (carouselFlatListRef.current && photos.length > 0 && currentIndex >= 0) {
+      // Small delay to ensure FlatList has rendered
+      const timer = setTimeout(() => {
+        carouselFlatListRef.current?.scrollToIndex({
+          index: currentIndex,
+          animated: true,
+          viewPosition: 0.5, // Center the item
+        });
+      }, 100);
+
+      return () => clearTimeout(timer);
+    }
+  }, [currentIndex, photos.length]);
 
   // Get display values - prefer enriched metadata, fall back to photo data
   const displayFilename = currentEnrichedMetadata?.filename || currentPhoto.filename;
@@ -241,6 +263,10 @@ export const PhotoViewerScreen: React.FC = () => {
     setScrollEnabled(!isZoomed);
   }, []);
 
+  const handleCarouselPhotoPress = useCallback((index: number) => {
+    flatListRef.current?.scrollToIndex({ index, animated: true });
+  }, []);
+
   // Dynamic styles for photo container based on screen dimensions
   const photoContainerStyle = useMemo(() => ({
     width: screenWidth,
@@ -263,6 +289,46 @@ export const PhotoViewerScreen: React.FC = () => {
     );
   }, [photoContainerStyle, toggleControls, handleZoomStateChange]);
 
+  // Render carousel thumbnail item
+  const renderCarouselItem = useCallback(({ item, index }: { item: Photo; index: number }) => {
+    const isCurrent = index === currentIndex;
+    const isValid = item && typeof item.uri === 'string' && item.uri.length > 0;
+
+    if (!isValid) return null;
+
+    return (
+      <View style={styles.carouselItemWrapper}>
+        <TouchableOpacity
+          style={[
+            styles.carouselThumbnailContainer,
+            isCurrent && styles.carouselCurrentContainer,
+          ]}
+          onPress={() => handleCarouselPhotoPress(index)}
+          activeOpacity={0.7}
+          disabled={isCurrent}
+        >
+          <Image
+            source={{ uri: item.uri }}
+            style={styles.carouselThumbnail}
+            resizeMode="cover"
+          />
+          {!isCurrent && <View style={styles.carouselOverlay} />}
+          {isCurrent && <View style={styles.carouselCurrentBorder} />}
+        </TouchableOpacity>
+      </View>
+    );
+  }, [currentIndex, handleCarouselPhotoPress]);
+
+  // Get layout for carousel items - all items same width now
+  const getCarouselItemLayout = useCallback((_: unknown, index: number) => {
+    const itemWidth = 100 + spacing.xs * 2; // 116px - consistent for all items
+    return {
+      length: itemWidth,
+      offset: itemWidth * index,
+      index,
+    };
+  }, []);
+
   // Memoize getItemLayout to use dynamic screen width
   const getItemLayout = useCallback((_: unknown, index: number) => ({
     length: screenWidth,
@@ -273,6 +339,7 @@ export const PhotoViewerScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       <FlatList
+        ref={flatListRef}
         data={photos}
         renderItem={renderPhoto}
         keyExtractor={(item) => item.id}
@@ -286,7 +353,7 @@ export const PhotoViewerScreen: React.FC = () => {
         viewabilityConfig={VIEWABILITY_CONFIG}
       />
 
-      {showControls && (
+      {showControls && currentPhoto && (
         <>
           {/* Header */}
           <View style={styles.header}>
@@ -300,6 +367,39 @@ export const PhotoViewerScreen: React.FC = () => {
             </View>
             <View style={styles.iconButton} />
           </View>
+
+          {/* Photo Carousel */}
+          {currentPhoto && currentPhoto.uri && photos && photos.length > 0 && currentIndex >= 0 && (
+            <View style={styles.carouselContainer}>
+              <FlatList
+                ref={carouselFlatListRef}
+                data={photos}
+                renderItem={renderCarouselItem}
+                keyExtractor={(item) => item.id}
+                extraData={currentIndex}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.carouselScrollContent}
+                style={styles.carouselScroll}
+                getItemLayout={getCarouselItemLayout}
+                initialNumToRender={20}
+                maxToRenderPerBatch={10}
+                windowSize={11}
+                removeClippedSubviews={false}
+                onScrollToIndexFailed={(info) => {
+                  // Handle scroll failure by waiting and trying again
+                  const wait = new Promise(resolve => setTimeout(resolve, 100));
+                  wait.then(() => {
+                    carouselFlatListRef.current?.scrollToIndex({
+                      index: info.index,
+                      animated: false,
+                      viewPosition: 0.5,
+                    });
+                  });
+                }}
+              />
+            </View>
+          )}
 
           {/* Footer with actions */}
           <View style={styles.footer}>
@@ -487,6 +587,51 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     textAlign: 'center',
+  },
+  carouselContainer: {
+    position: 'absolute',
+    bottom: 100, // Position above the footer
+    left: 0,
+    right: 0,
+    paddingVertical: spacing.md,
+  },
+  carouselScroll: {
+    flexGrow: 0,
+  },
+  carouselScrollContent: {
+    paddingHorizontal: spacing.md,
+    alignItems: 'center',
+  },
+  carouselItemWrapper: {
+    width: 100 + spacing.xs * 2, // Fixed width for all items
+    height: 100,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  carouselThumbnailContainer: {
+    width: 80,
+    height: 80,
+    borderRadius: 8,
+    overflow: 'hidden',
+    backgroundColor: colors.surface,
+  },
+  carouselCurrentContainer: {
+    width: 100,
+    height: 100,
+  },
+  carouselThumbnail: {
+    width: '100%',
+    height: '100%',
+  },
+  carouselOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+  },
+  carouselCurrentBorder: {
+    ...StyleSheet.absoluteFillObject,
+    borderWidth: 3,
+    borderColor: colors.primary,
+    borderRadius: 8,
   },
   footer: {
     position: 'absolute',

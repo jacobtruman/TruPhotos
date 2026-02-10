@@ -66,7 +66,11 @@ export const TabNavigator: React.FC = () => {
       })}
     >
       <Tab.Screen name="Timeline" component={PhotosScreen} />
-      <Tab.Screen name="Library" component={AlbumsScreen} />
+      <Tab.Screen
+        name="Library"
+        component={AlbumsScreen}
+        options={{ tabBarLabel: 'Folders' }}
+      />
     </Tab.Navigator>
   );
 };

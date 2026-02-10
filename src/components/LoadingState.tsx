@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
-import { StyleSheet, View, Text, ActivityIndicator } from 'react-native';
-import { colors, spacing, typography } from '../theme';
+import { View, Text, ActivityIndicator } from 'react-native';
+import { colors, commonStyles } from '../theme';
 
 interface LoadingStateProps {
   loading?: boolean;
@@ -29,11 +29,11 @@ export const LoadingState: React.FC<LoadingStateProps> = ({
 }) => {
   if (loading) {
     return (
-      <View style={styles.container}>
+      <View style={commonStyles.container}>
         {header}
-        <View style={styles.centered}>
+        <View style={commonStyles.centered}>
           <ActivityIndicator size="large" color={colors.primary} />
-          <Text style={styles.loadingText}>{loadingText}</Text>
+          <Text style={commonStyles.loadingText}>{loadingText}</Text>
         </View>
       </View>
     );
@@ -41,11 +41,11 @@ export const LoadingState: React.FC<LoadingStateProps> = ({
 
   if (error) {
     return (
-      <View style={styles.container}>
+      <View style={commonStyles.container}>
         {header}
-        <View style={styles.centered}>
-          <Text style={styles.errorText}>{errorText || error}</Text>
-          {errorHint && <Text style={styles.errorHint}>{errorHint}</Text>}
+        <View style={commonStyles.centered}>
+          <Text style={commonStyles.errorText}>{errorText || error}</Text>
+          {errorHint && <Text style={commonStyles.errorHint}>{errorHint}</Text>}
         </View>
       </View>
     );
@@ -53,11 +53,11 @@ export const LoadingState: React.FC<LoadingStateProps> = ({
 
   if (empty) {
     return (
-      <View style={styles.container}>
+      <View style={commonStyles.container}>
         {header}
-        <View style={styles.centered}>
-          <Text style={styles.emptyText}>{emptyText}</Text>
-          {emptyHint && <Text style={styles.emptyHint}>{emptyHint}</Text>}
+        <View style={commonStyles.centered}>
+          <Text style={commonStyles.emptyText}>{emptyText}</Text>
+          {emptyHint && <Text style={commonStyles.emptyHint}>{emptyHint}</Text>}
           {children}
         </View>
       </View>
@@ -66,43 +66,4 @@ export const LoadingState: React.FC<LoadingStateProps> = ({
 
   return null;
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  centered: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: spacing.xl,
-  },
-  loadingText: {
-    ...typography.body,
-    color: colors.textSecondary,
-    marginTop: spacing.md,
-  },
-  errorText: {
-    ...typography.body,
-    color: colors.error,
-    textAlign: 'center',
-  },
-  errorHint: {
-    ...typography.small,
-    color: colors.textMuted,
-    marginTop: spacing.sm,
-  },
-  emptyText: {
-    ...typography.body,
-    color: colors.textSecondary,
-    textAlign: 'center',
-  },
-  emptyHint: {
-    ...typography.small,
-    color: colors.textMuted,
-    marginTop: spacing.sm,
-    textAlign: 'center',
-  },
-});
 

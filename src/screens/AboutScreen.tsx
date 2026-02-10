@@ -60,6 +60,11 @@ export const AboutScreen: React.FC = () => {
     await Linking.openURL('https://github.com/jacobtruman/TruPhotos');
   };
 
+  const handleLicense = async () => {
+    // Opens the MIT License file
+    await Linking.openURL('https://github.com/jacobtruman/TruPhotos/blob/main/LICENSE');
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -105,9 +110,15 @@ export const AboutScreen: React.FC = () => {
             onPress={handlePrivacyPolicy}
           />
           <InfoItem
+            icon="shield-checkmark-outline"
+            title="License"
+            subtitle="MIT License"
+            onPress={handleLicense}
+          />
+          <InfoItem
             icon="code-slash-outline"
             title="Open Source"
-            subtitle="MIT License"
+            subtitle="View on GitHub"
             onPress={handleOpenSource}
           />
         </View>

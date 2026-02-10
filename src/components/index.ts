@@ -5,4 +5,5 @@ export { ProfileButton } from './ProfileButton';
 export { LibraryDropdown } from './LibraryDropdown';
 export { LoadingState } from './LoadingState';
 export { FloatingRefreshButton } from './FloatingRefreshButton';
+export { ZoomableImage } from './ZoomableImage';
 
