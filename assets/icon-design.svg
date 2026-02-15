@@ -16,7 +16,7 @@
       <!-- Main camera body -->
       <rect x="180" y="340" width="664" height="450" rx="50" ry="50"/>
       <!-- Viewfinder hump -->
-      <path d="M 370 340 L 400 255 Q 405 250 420 250 L 604 250 Q 619 250 624 255 L 654 340 Z"/>
+      <path d="M 370 345 L 400 255 Q 405 250 420 250 L 604 250 Q 619 250 624 255 L 654 345 Z"/>
     </g>
 
     <!-- Aperture blades in gold/yellow - centered at 512,565 and scaled up -->
