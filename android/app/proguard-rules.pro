@@ -60,3 +60,44 @@
 
 # For stack traces
 -renamesourcefileattribute SourceFile
+
+# React Native InAppBrowser
+-keep class com.proyecto26.inappbrowser.** { *; }
+-dontwarn com.proyecto26.inappbrowser.**
+
+# AndroidX Browser (Chrome Custom Tabs - used by InAppBrowser)
+-keep class androidx.browser.** { *; }
+-dontwarn androidx.browser.**
+
+# React Native FS
+-keep class com.rnfs.** { *; }
+-dontwarn com.rnfs.**
+
+# React Native Share
+-keep class cl.json.** { *; }
+-dontwarn cl.json.**
+
+# React Native Camera Roll
+-keep class com.reactnativecommunity.cameraroll.** { *; }
+-dontwarn com.reactnativecommunity.cameraroll.**
+
+# React Native Get Random Values
+-keep class org.nicovank.** { *; }
+-dontwarn org.nicovank.**
+
+# React Native Linear Gradient
+-keep class com.BV.LinearGradient.** { *; }
+-dontwarn com.BV.LinearGradient.**
+
+# Keep all native modules
+-keep class com.facebook.react.bridge.** { *; }
+-keep class com.facebook.react.modules.** { *; }
+
+# Prevent R8 from stripping interface methods
+-keepclassmembers,allowobfuscation interface * {
+    @com.facebook.react.bridge.ReactMethod <methods>;
+}
+
+# Keep TurboModules
+-keep class com.facebook.react.turbomodule.core.** { *; }
+-keep class com.facebook.react.defaults.** { *; }
