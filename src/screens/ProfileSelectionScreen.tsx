@@ -76,8 +76,8 @@ export const ProfileSelectionScreen: React.FC = () => {
       setPinModalVisible(false);
       setPin('');
       setSelectedProfileForPin(null);
-    } catch (error) {
-      console.error('Failed to switch profile with PIN:', error);
+    } catch {
+      // Expected error when PIN is incorrect - only show UI alert, no console logging
       Alert.alert('Incorrect PIN', 'Please try again.');
       setPin('');
     } finally {

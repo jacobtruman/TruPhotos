@@ -27,7 +27,7 @@ export const AlbumCard: React.FC<AlbumCardProps> = ({ album, itemCount, size = D
 
   return (
     <TouchableOpacity
-      style={[styles.container, { width: size, margin: 4 }]}
+      style={[styles.container, styles.margin, { width: size }]}
       onPress={onPress}
       activeOpacity={0.8}
     >
@@ -57,7 +57,7 @@ export const AlbumCard: React.FC<AlbumCardProps> = ({ album, itemCount, size = D
                   ]}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 0, y: 1 }}
-                  style={[styles.gradientOverlay, { opacity: 0.2 }]}
+                  style={[styles.gradientOverlay, styles.gradientOpacity]}
                 />
                 <LinearGradient
                   colors={[
@@ -66,7 +66,7 @@ export const AlbumCard: React.FC<AlbumCardProps> = ({ album, itemCount, size = D
                   ]}
                   start={{ x: 1, y: 0 }}
                   end={{ x: 1, y: 1 }}
-                  style={[styles.gradientOverlay, { opacity: 0.2 }]}
+                  style={[styles.gradientOverlay, styles.gradientOpacity]}
                 />
                 {/* Horizontal blend from left to right */}
                 <LinearGradient
@@ -76,7 +76,7 @@ export const AlbumCard: React.FC<AlbumCardProps> = ({ album, itemCount, size = D
                   ]}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 0 }}
-                  style={[styles.gradientOverlay, { opacity: 0.2 }]}
+                  style={[styles.gradientOverlay, styles.gradientOpacity]}
                 />
                 <LinearGradient
                   colors={[
@@ -85,7 +85,7 @@ export const AlbumCard: React.FC<AlbumCardProps> = ({ album, itemCount, size = D
                   ]}
                   start={{ x: 0, y: 1 }}
                   end={{ x: 1, y: 1 }}
-                  style={[styles.gradientOverlay, { opacity: 0.2 }]}
+                  style={[styles.gradientOverlay, styles.gradientOpacity]}
                 />
               </View>
             ) : (
@@ -113,6 +113,12 @@ export const AlbumCard: React.FC<AlbumCardProps> = ({ album, itemCount, size = D
 const styles = StyleSheet.create({
   container: {
     marginBottom: spacing.xs,
+  },
+  margin: {
+    margin: 4,
+  },
+  gradientOpacity: {
+    opacity: 0.2,
   },
   folderTab: {
     height: TAB_HEIGHT,

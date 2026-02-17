@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import {
   View,
   Text,
@@ -14,6 +14,8 @@ import { colors, spacing, borderRadius, typography, commonStyles } from '../them
 import { FloatingRefreshButton } from '../components';
 import { useAuth } from '../context/AuthContext';
 import { PlexLibrary } from '../types';
+
+const ItemSeparator = () => <View style={styles.separator} />;
 
 export const LibrarySelectionScreen: React.FC = () => {
   const { libraries, selectLibrary, refreshLibraries, clearProfile, clearServer, logout, isLoading, selectedServer } = useAuth();
@@ -40,7 +42,7 @@ export const LibrarySelectionScreen: React.FC = () => {
     </TouchableOpacity>
   );
 
-  const ListEmptyComponent = () => (
+  const listEmptyComponent = useMemo(() => (
     <View style={styles.emptyContainer}>
       <Ionicons name="images-outline" size={64} color={colors.textMuted} />
       <Text style={styles.emptyTitle}>No Photo Libraries Found</Text>
@@ -56,7 +58,7 @@ export const LibrarySelectionScreen: React.FC = () => {
         <Text style={styles.switchProfileButtonText}>Switch Profile</Text>
       </TouchableOpacity>
     </View>
-  );
+  ), [refreshLibraries, clearProfile]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -92,8 +94,8 @@ export const LibrarySelectionScreen: React.FC = () => {
           renderItem={renderLibrary}
           keyExtractor={(item) => item.key}
           contentContainerStyle={styles.libraryList}
-          ListEmptyComponent={ListEmptyComponent}
-          ItemSeparatorComponent={() => <View style={styles.separator} />}
+          ListEmptyComponent={listEmptyComponent}
+          ItemSeparatorComponent={ItemSeparator}
         />
       )}
 

@@ -10,6 +10,23 @@ type IoniconsName = React.ComponentProps<typeof Ionicons>['name'];
 
 const Tab = createBottomTabNavigator<RootTabParamList>();
 
+const getTabBarIcon = (routeName: string, focused: boolean, color: string, size: number) => {
+  let iconName: IoniconsName;
+
+  switch (routeName) {
+    case 'Timeline':
+      iconName = focused ? 'time' : 'time-outline';
+      break;
+    case 'Library':
+      iconName = focused ? 'folder' : 'folder-outline';
+      break;
+    default:
+      iconName = 'help-outline';
+  }
+
+  return <Ionicons name={iconName} size={size} color={color} />;
+};
+
 export const TabNavigator: React.FC = () => {
   const { selectedTab, setSelectedTab } = useAuth();
 
@@ -47,22 +64,8 @@ export const TabNavigator: React.FC = () => {
           fontSize: 12,
           fontWeight: '500',
         },
-        tabBarIcon: ({ focused, color, size }) => {
-          let iconName: IoniconsName;
-
-          switch (route.name) {
-            case 'Timeline':
-              iconName = focused ? 'time' : 'time-outline';
-              break;
-            case 'Library':
-              iconName = focused ? 'folder' : 'folder-outline';
-              break;
-            default:
-              iconName = 'help-outline';
-          }
-
-          return <Ionicons name={iconName} size={size} color={color} />;
-        },
+        tabBarIcon: ({ focused, color, size }) =>
+          getTabBarIcon(route.name, focused, color, size),
       })}
     >
       <Tab.Screen name="Timeline" component={PhotosScreen} />

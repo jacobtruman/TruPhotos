@@ -44,8 +44,8 @@ export const AlbumDetailScreen: React.FC = () => {
       return;
     }
 
-    const serverToken = selectedServer.accessToken;
-    if (!serverToken) {
+    const accessToken = selectedServer.accessToken;
+    if (!accessToken) {
       setLoading(false);
       setError('No server access token');
       return;
@@ -54,10 +54,10 @@ export const AlbumDetailScreen: React.FC = () => {
     try {
       setError(null);
       // Use ratingKey if available, otherwise fall back to key
-      const contents = await getFolderContents(selectedServer, serverToken, albumRatingKey || albumKey);
+      const contents = await getFolderContents(selectedServer, accessToken, albumRatingKey || albumKey);
 
-      const fetchedFolders = convertPlexAlbumsToAlbums(contents.folders, selectedServer, serverToken);
-      const fetchedPhotos = convertPlexPhotosToPhotos(contents.photos, selectedServer, serverToken);
+      const fetchedFolders = convertPlexAlbumsToAlbums(contents.folders, selectedServer, accessToken);
+      const fetchedPhotos = convertPlexPhotosToPhotos(contents.photos, selectedServer, accessToken);
 
       // Use Plex's original order (no sorting)
 

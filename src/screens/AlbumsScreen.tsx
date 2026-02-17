@@ -30,8 +30,8 @@ export const AlbumsScreen: React.FC = () => {
       return;
     }
 
-    const serverToken = selectedServer.accessToken;
-    if (!serverToken) {
+    const accessToken = selectedServer.accessToken;
+    if (!accessToken) {
       setLoading(false);
       setError('No server access token');
       return;
@@ -39,8 +39,8 @@ export const AlbumsScreen: React.FC = () => {
 
     try {
       setError(null);
-      const plexAlbums = await getAlbumsFromLibrary(selectedServer, serverToken, selectedLibrary.key);
-      const fetchedAlbums = convertPlexAlbumsToAlbums(plexAlbums, selectedServer, serverToken);
+      const plexAlbums = await getAlbumsFromLibrary(selectedServer, accessToken, selectedLibrary.key);
+      const fetchedAlbums = convertPlexAlbumsToAlbums(plexAlbums, selectedServer, accessToken);
       setAlbums(fetchedAlbums);
     } catch (err) {
       console.error('Failed to fetch albums:', err);

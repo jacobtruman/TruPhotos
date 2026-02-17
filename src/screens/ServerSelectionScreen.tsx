@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -16,6 +16,8 @@ import { colors, spacing, borderRadius, typography, commonStyles } from '../them
 import { FloatingRefreshButton } from '../components';
 import { useAuth } from '../context/AuthContext';
 import { PlexServer } from '../types';
+
+const ItemSeparator = () => <View style={styles.separator} />;
 
 export const ServerSelectionScreen: React.FC = () => {
   const { servers, selectServer, refreshServers, isLoading, selectedProfile } = useAuth();
@@ -85,7 +87,7 @@ export const ServerSelectionScreen: React.FC = () => {
     );
   };
 
-  const ListEmptyComponent = () => (
+  const listEmptyComponent = useMemo(() => (
     <View style={styles.emptyContainer}>
       <Ionicons name="server-outline" size={64} color={colors.textMuted} />
       <Text style={styles.emptyTitle}>No Servers Found</Text>
@@ -97,7 +99,7 @@ export const ServerSelectionScreen: React.FC = () => {
         <Text style={styles.refreshButtonText}>Refresh</Text>
       </TouchableOpacity>
     </View>
-  );
+  ), [refreshServers]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -123,8 +125,8 @@ export const ServerSelectionScreen: React.FC = () => {
           renderItem={renderServer}
           keyExtractor={(item) => item.machineIdentifier}
           contentContainerStyle={styles.serverList}
-          ListEmptyComponent={ListEmptyComponent}
-          ItemSeparatorComponent={() => <View style={styles.separator} />}
+          ListEmptyComponent={listEmptyComponent}
+          ItemSeparatorComponent={ItemSeparator}
         />
       )}
 
